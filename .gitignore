@@ -1,0 +1,17 @@
+# Local secrets
+.env
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Virtual environments and local machine files
+.venv/
+.DS_Store
+
+# Generated comparison output
+price_comparison.txt

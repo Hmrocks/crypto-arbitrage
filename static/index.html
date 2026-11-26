@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07120f">
+  <title>Cross-Exchange Arbitrage Scanner</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07120f;--panel:#0d1c18;--panel2:#10231d;--line:#203a31;--muted:#8ea49a;--text:#edf8f1;--green:#47efad;--lime:#c7f36b;--red:#ff7777;--amber:#f5c66c;--blue:#84c4ff}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 82% -15%,#14352a 0,transparent 38%),var(--bg);color:var(--text);font:14px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    button,input{font:inherit}.shell{max-width:1500px;margin:auto;padding:30px 34px 60px}.topbar{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:22px;gap:20px}.brand{display:flex;align-items:center;gap:14px}.mark{width:42px;height:42px;border:1px solid #39775e;border-radius:13px;display:grid;place-items:center;color:var(--green);font-weight:800;font-size:20px;background:#10271f}.eyebrow{color:var(--green);font-size:10px;font-weight:800;letter-spacing:.19em;text-transform:uppercase}.brand h1{font-size:18px;margin:2px 0 0;letter-spacing:-.025em}.topright{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:12px}.live-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #286348;background:#0e291e;color:#9df2c4;padding:7px 11px;border-radius:99px;font-weight:700}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+    .intro{display:flex;justify-content:space-between;align-items:flex-end;padding:28px 0 22px;gap:30px}.intro h2{font-size:30px;line-height:1.1;letter-spacing:-.05em;margin:0 0 8px}.intro p{color:var(--muted);margin:0;max-width:700px}.timestamp{text-align:right;color:var(--muted);font-size:11px;white-space:nowrap}.timestamp strong{color:var(--text);display:block;font-size:13px;margin-top:4px;font-weight:600}
+    .notice{padding:12px 15px;background:#17251b;border:1px solid #4b4527;border-radius:10px;color:#e4d29c;font-size:12px;margin-bottom:18px}.notice strong{color:#ffe08b}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}.metric{background:linear-gradient(140deg,#10231d,#0a1713);border:1px solid var(--line);border-radius:13px;padding:15px 17px;min-height:88px}.metric .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.metric .value{font-size:23px;font-weight:700;letter-spacing:-.04em;margin-top:6px}.metric .sub{font-size:10px;color:var(--muted);margin-top:1px}
+    .workspace{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:14px;align-items:start}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}.cardhead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line);gap:12px}.cardhead h3{font-size:13px;margin:0;letter-spacing:.02em}.subtext{font-size:10px;color:var(--muted);margin-top:3px}.filters{display:flex;align-items:center;gap:8px}.search{width:160px;background:#091611;border:1px solid var(--line);color:var(--text);border-radius:7px;padding:8px 10px;outline:none}.search:focus,.field input:focus{border-color:#3a8664}.toggle{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}.toggle input{accent-color:var(--green)}.tablewrap{overflow:auto;max-height:67vh}table{border-collapse:collapse;width:100%;min-width:950px;font-variant-numeric:tabular-nums}thead{position:sticky;top:0;background:#10221c;z-index:1}th{text-align:left;color:#91aa9e;font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:12px;border-bottom:1px solid #182d25;font-size:11px;white-space:nowrap}tbody tr:hover{background:#11251e}.pair{font-size:12px;font-weight:700}.quote{color:var(--muted);font-weight:500}.venue{color:#d6e8dd}.route{display:flex;align-items:center;gap:6px}.arrow{color:#597769}.number{font-variant-numeric:tabular-nums}.positive{color:var(--green);font-weight:800}.negative{color:var(--red);font-weight:700}.neutral{color:var(--muted)}.status-tag{font-size:9px;font-weight:800;letter-spacing:.06em;border-radius:5px;padding:4px 6px;background:#362b18;color:var(--amber)}.status-tag.good{background:#103526;color:var(--green)}.empty{padding:40px 18px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);font-size:13px;margin-bottom:5px}.errorbox{display:none;background:#321a1a;border:1px solid #663737;border-radius:10px;color:#ffc2c2;margin:0 0 14px;padding:12px 14px;font-size:11px;max-height:120px;overflow:auto}
+    .settings{padding:16px}.settings h3{font-size:13px;margin:0}.settings .subtext{margin-bottom:15px}.field{margin:12px 0}.field label{display:flex;justify-content:space-between;color:#b5c8be;font-size:10px;margin-bottom:5px}.field input,.feesbox{width:100%;background:#081510;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:9px 10px;outline:none;font-variant-numeric:tabular-nums}.feesbox{height:72px;resize:vertical;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}.hint{font-size:9px;color:#789084;margin-top:5px}.save{width:100%;background:var(--green);color:#062116;border:0;border-radius:8px;padding:10px;font-weight:800;cursor:pointer;margin-top:4px}.save:hover{background:#8cffc5}.save:disabled{opacity:.5;cursor:wait}.settings-msg{font-size:10px;color:var(--green);min-height:15px;margin-top:8px}.venue-list{border-top:1px solid var(--line);padding:14px 16px}.venue-list h4{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}.venue-item{display:flex;justify-content:space-between;color:#c9dbd1;font-size:10px;padding:4px 0}.venue-item span:last-child{color:var(--green)}.foot{color:#688176;font-size:10px;padding:16px 3px;display:flex;justify-content:space-between;gap:12px}.foot a{color:#9fbcad;text-decoration:none}
+    @media(max-width:1050px){.workspace{grid-template-columns:1fr}.settings-card{order:-1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.tablewrap{max-height:none}}
+    @media(max-width:640px){.shell{padding:18px 13px 36px}.topbar{align-items:flex-start}.topright{flex-direction:column;align-items:flex-end;gap:6px}.intro{display:block}.intro h2{font-size:26px}.timestamp{text-align:left;margin-top:12px}.cardhead{align-items:flex-start;flex-direction:column}.filters{width:100%;justify-content:space-between}.search{width:55%}.metrics{gap:8px}.metric{padding:12px;min-height:76px}.metric .value{font-size:19px}.foot{display:block}.foot span{display:block;margin-top:5px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="mark">Δ</div><div><div class="eyebrow">Market intelligence / 01</div><h1>Cross-Exchange Scanner</h1></div></div>
+      <div class="topright"><span id="live" class="live-pill"><i class="dot"></i> CONNECTING</span><span id="cycle">cycle —</span></div>
+    </header>
+    <section class="intro"><div><h2>Find the edge after costs.</h2><p>Spot order books, walked to your order size. Compare every shared pair across connected venues after taker fees, displayed depth impact, rebalancing, and your latency risk setting.</p></div><div class="timestamp">Last scan<strong id="updated">Waiting for first market data…</strong></div></section>
+    <div class="notice"><strong>Paper analysis only.</strong> This dashboard reads public market data and submits no orders. A displayed opportunity is an estimate; depth can disappear before execution. Keep inventory on both venues for cross-exchange trading.</div>
+    <div id="errors" class="errorbox"></div>
+    <section class="metrics">
+      <article class="metric"><div class="label">Venues online</div><div class="value" id="m-exchanges">—</div><div class="sub" id="m-venue-names">connecting to feeds</div></article>
+      <article class="metric"><div class="label">Common pairs</div><div class="value" id="m-pairs">—</div><div class="sub">ranked by reported 24h volume</div></article>
+      <article class="metric"><div class="label">Books received</div><div class="value" id="m-books">—</div><div class="sub">level 2 snapshots per scan</div></article>
+      <article class="metric"><div class="label">Best net estimate</div><div class="value" id="m-best">—</div><div class="sub" id="m-best-route">after configured costs</div></article>
+    </section>
+    <section class="workspace">
+      <article class="card">
+        <div class="cardhead"><div><h3>Opportunity matrix</h3><div class="subtext">Both directions for each shared spot pair · best net first · depth impact is already reflected in gross</div></div><div class="filters"><input id="search" class="search" type="search" placeholder="Filter pair or venue" aria-label="Filter opportunities"><label class="toggle"><input id="positive-only" type="checkbox"> Positive net only</label></div></div>
+        <div class="tablewrap"><table><thead><tr><th>Pair / route</th><th>Trade size</th><th>Gross</th><th>Fees</th><th>Depth impact</th><th>Rebalance</th><th>Latency risk</th><th>Net estimate</th><th>API ms</th><th>Book skew</th></tr></thead><tbody id="rows"><tr><td colspan="10" class="empty"><strong>Waiting for market data</strong>Start the local scanner to begin.</td></tr></tbody></table></div>
+      </article>
+      <aside class="card settings-card">
+        <div class="settings"><h3>Cost model</h3><div class="subtext">Adjust the paper estimate. Fee overrides are decimal rates.</div>
+          <div class="field"><label for="budget">Order budget <span>quote currency</span></label><input id="budget" type="number" min="1" step="1" value="100"></div>
+          <div class="field"><label for="rebalance">Rebalancing cost <span>per opportunity</span></label><input id="rebalance" type="number" min="0" step="0.01" value="0"></div>
+          <div class="field"><label for="latency-buffer">Latency risk buffer <span>bps per second</span></label><input id="latency-buffer" type="number" min="0" step="0.1" value="0"><div class="hint">Set from measured short-window volatility. Zero means this risk is not priced in.</div></div>
+          <div class="field"><label for="skew">Max book time skew <span>milliseconds</span></label><input id="skew" type="number" min="100" step="100" value="1500"></div>
+          <div class="field"><label for="fees">Account taker fee overrides</label><textarea id="fees" class="feesbox" spellcheck="false" placeholder='{"binance":"0.001","kraken":"0.008"}'></textarea><div class="hint">Leave blank to use fee metadata from the exchange library when available.</div></div>
+          <button id="save" class="save">Apply cost model</button><div id="settings-msg" class="settings-msg"></div>
+        </div>
+        <div class="venue-list"><h4>Live venue · average REST request</h4><div id="venues"><div class="venue-item"><span>Loading…</span><span>—</span></div></div></div>
+      </aside>
+    </section>
+    <footer class="foot"><span>Snapshot scanner · rate-limited public REST · no trade execution</span><span>For a low-latency VPS, run market ingestion near exchange regions and measure end-to-end order acknowledgements before tuning.</span></footer>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let lastState = null;
+    const fmt = (value, digits=4) => value == null ? "—" : Number(value).toLocaleString(undefined,{minimumFractionDigits:digits,maximumFractionDigits:digits});
+    const money = (value, quote) => value == null ? "—" : `${Number(value)>=0?"+":""}${fmt(value,6)} ${quote||""}`;
+    async function loadSettings(){
+      try{const r=await fetch('/api/settings');const s=await r.json();$('budget').value=s.quote_budget;$('rebalance').value=s.rebalance_cost;$('latency-buffer').value=s.latency_buffer_bps;$('skew').value=s.max_book_skew_ms;$('fees').value=Object.keys(s.taker_fees).length?JSON.stringify(s.taker_fees,null,2):'';}catch(e){}
+    }
+    async function saveSettings(){
+      const button=$('save');button.disabled=true;$('settings-msg').textContent='Applying…';
+      try{let fees={};const raw=$('fees').value.trim();if(raw)fees=JSON.parse(raw);const payload={quote_budget:$('budget').value,rebalance_cost:$('rebalance').value,latency_buffer_bps:$('latency-buffer').value,max_book_skew_ms:$('skew').value,taker_fees:fees};const response=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw new Error(result.detail||'Invalid settings');$('settings-msg').textContent='Cost model applied.';}catch(e){$('settings-msg').textContent=e.message;}finally{button.disabled=false;}
+    }
+    function renderRows(items){
+      const query=$('search').value.trim().toLowerCase();const positiveOnly=$('positive-only').checked;
+      const filtered=(items||[]).filter(x=>`${x.symbol} ${x.buy_exchange} ${x.sell_exchange}`.toLowerCase().includes(query)&&(!positiveOnly||(x.net_quote!=null&&Number(x.net_quote)>0)));
+      if(!filtered.length){$('rows').innerHTML='<tr><td colspan="10" class="empty"><strong>No matching opportunities</strong>Try clearing the filter or wait for the next scan.</td></tr>';return;}
+      $('rows').innerHTML=filtered.map(x=>{
+        const route=`<span class="venue">${x.buy_exchange}</span><span class="arrow">→</span><span class="venue">${x.sell_exchange}</span>`;
+        const net=x.net_quote==null?null:Number(x.net_quote);const netClass=net==null?'neutral':net>0?'positive':'negative';
+        const gross=x.gross_quote==null?null:Number(x.gross_quote);const fees=x.fees_quote==null?null:Number(x.fees_quote);const slip=x.slippage_quote==null?null:Number(x.slippage_quote);const rebal=x.rebalance_cost_quote==null?null:Number(x.rebalance_cost_quote);const risk=x.latency_buffer_quote==null?null:Number(x.latency_buffer_quote);
+        const info=x.executable?'':`<span class="status-tag">${x.reason?.includes('fee')?'FEE NEEDED':'DEPTH LOW'}</span>`;
+        const size=x.requested_amount?`${fmt(x.requested_amount,6)} ${x.amount_unit||''}`:'—';const api=x.buy_latency_ms==null?'—':`${fmt(x.buy_latency_ms,0)} / ${fmt(x.sell_latency_ms,0)}`;
+        const skew=x.book_skew_ms==null?'—':`${fmt(x.book_skew_ms,0)} ms`;
+        return `<tr><td><div class="pair">${x.symbol}</div><div class="route">${route}</div>${info}</td><td>${size}</td><td class="number ${gross!=null&&gross>0?'positive':gross!=null?'negative':'neutral'}">${money(gross,x.quote)}</td><td class="number">${fees==null?'—':fmt(fees,6)+' '+x.quote}</td><td class="number">${slip==null?'—':fmt(slip,6)+' '+x.quote}</td><td class="number">${rebal==null?'—':fmt(rebal,4)+' '+x.quote}</td><td class="number">${risk==null?'—':fmt(risk,6)+' '+x.quote}</td><td class="number ${netClass}">${money(net,x.quote)}</td><td class="number">${api}</td><td class="number">${skew}</td></tr>`;
+      }).join('');
+    }
+    function render(state){
+      lastState=state;const online=state.exchange_ids?.length||0;const status=state.status||'starting';$('live').innerHTML=`<i class="dot" style="background:${status==='live'?'var(--green)':'var(--amber)'}"></i> ${status.toUpperCase()}`;$('cycle').textContent=state.cycle_ms==null?'cycle —':`cycle ${fmt(state.cycle_ms,0)} ms`;$('updated').textContent=state.updated_at?new Date(state.updated_at).toLocaleTimeString():"Waiting for first market data…";$('m-exchanges').textContent=online;$('m-venue-names').textContent=state.exchange_ids?.join(' · ')||'No venues ready';$('m-pairs').textContent=state.pairs_scanned??'—';$('m-books').textContent=state.books_received??'—';
+      const candidates=(state.opportunities||[]).filter(x=>x.net_quote!=null);const best=candidates[0];$('m-best').textContent=best?`${Number(best.net_quote)>=0?'+':''}${fmt(best.net_quote,4)} ${best.quote}`:'—';$('m-best').className=`value ${best?(Number(best.net_quote)>0?'positive':'negative'):''}`;$('m-best-route').textContent=best?`${best.symbol} · ${best.buy_exchange} → ${best.sell_exchange}`:'No fee-complete opportunity yet';
+      const errors=state.errors||[];$('errors').style.display=errors.length?'block':'none';$('errors').innerHTML=errors.slice(0,12).map(e=>`<div>• ${e}</div>`).join('');$('venues').innerHTML=(state.exchange_ids||[]).map(name=>{const latency=state.exchange_latency_ms?.[name];return `<div class="venue-item"><span>${name}</span><span>${latency==null?'ACTIVE':`${fmt(latency,0)} ms avg`}</span></div>`;}).join('')||'<div class="venue-item"><span>No exchanges ready</span><span>—</span></div>';renderRows(state.opportunities);
+    }
+    async function poll(){try{const response=await fetch('/api/state',{cache:'no-store'});if(!response.ok)throw new Error(`API ${response.status}`);render(await response.json());}catch(e){$('live').innerHTML='<i class="dot" style="background:var(--red)"></i> OFFLINE';$('errors').style.display='block';$('errors').textContent=e.message;}}
+    $('save').addEventListener('click',saveSettings);$('search').addEventListener('input',()=>lastState&&renderRows(lastState.opportunities));$('positive-only').addEventListener('change',()=>lastState&&renderRows(lastState.opportunities));
+    loadSettings();poll();setInterval(poll,2500);
+  </script>
+</body>
+</html>
